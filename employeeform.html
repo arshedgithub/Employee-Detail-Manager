@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Form</title>
+    <script>
+      window.addEventListener("load", initialize);
+
+      var ajax;
+      var genders;
+      var employees;
+      var array;
+
+      function initialize() {
+        employees = get("./employeeController.php");
+        genders = get("./gendercontroller.php");
+        loadView();
+        loadForm();
+      }
+
+      function loadView() {
+        fillTable(display, employees, ["name", "age", function (e) {return e.gender.name;},]);
+        fillCombo(cmbSearchGender, genders);
+      }
+
+      function loadForm() {
+        fillCombo(cmbGender, genders);
+      }
+
+      function get(url) {
+        var http = new XMLHttpRequest();
+
+        // asynchronus way
+
+        // http.onreadystatechange = function () {
+        //   if (this.readyState == 4 && this.status == 200) {
+        //     var data = JSON.parse(this.responseText);
+        //     fillCombo()
+        //   }
+        // };
+
+        // synchronous way
+        http.open("GET", url, false);
+        http.send();
+        var data = JSON.parse(http.responseText);
+        return data;
+      }
+
+      function fillTable(show, data, props) {
+        for (let i = 0; i < data.length; i++) {
+          const datum = data[i];
+          // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
+
+          var tr = document.createElement("tr");
+
+          for (let j = 0; j < props.length; j++) {
+            if (typeof props[j] == "function") {
+              var text = document.createTextNode(props[j](datum));
+            } else {
+              var text = document.createTextNode(datum[[props[j]]]);
+            }
+
+            var td = document.createElement("td");
+            td.appendChild(text);
+            tr.appendChild(td);
+          }
+
+          show.appendChild(tr);
+        }
+      }
+
+      function fillCombo(combo, data) {
+        for (let i = 0; i < data.length; i++) {
+          const datum = data[i];
+          var option = document.createElement("option");
+          option.value = datum["id"];
+          option.innerHTML = datum["name"];
+          combo.appendChild(option);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Employee Detail Mangaer</h1>
+    <h3>--------------------Searh--------------------</h3>
+
+    Name : <input type="text" id="txtSearchName" size="20" /><br /><br />
+    Gender :
+    <select id="cmbSearchGender"></select
+    ><br /><br />
+    <button id="btnSearh">Search</button>
+    <button id="btnSearhClear">Clear Search</button>
+
+    <h3>--------------------view--------------------</h3>
+    <table cellspacing="1" cellpadding="5" id="tblMain" border="1">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+        </tr>
+      </thead>
+      <tbody id="display"></tbody>
+    </table>
+
+    <h3>--------------------Form--------------------</h3>
+
+    Name : <input type="text" id="txtName" size="20" /><br /><br />
+    Age: <input type="text" id="txtAge" size="20" /><br /><br />
+    Gender :
+    <select id="cmbGender"></select
+    ><br /><br />
+    <button id="btnDelete">Delete</button><button id="btnUpdate">Update</button
+    ><button id="btnClear">Clear</button><button id="btnAdd">Add</button>
+  </body>
+</html>
