@@ -5,114 +5,156 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Employee Form</title>
-    <script>
-      window.addEventListener("load", initialize);
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <script>
+    window.addEventListener("load", initialize);
 
-      var ajax;
-      var genders;
-      var employees;
-      var array;
+    var ajax;
+    var genders;
+    var employees;
+    var array;
 
-      function initialize() {
-        employees = get("./employeeController.php");
-        genders = get("./gendercontroller.php");
-        loadView();
-        loadForm();
-      }
+    function initialize() {
+      employees = get("./employeeController.php");
+      genders = get("./gendercontroller.php");
+      loadView();
+      loadForm();
+    }
 
-      function loadView() {
-        fillTable(display, employees, ["name", "age", function (e) {return e.gender.name;},]);
-        fillCombo(cmbSearchGender, genders);
-      }
+    function loadView() {
+      fillTable(display, employees, [
+        "name",
+        "age",
+        function (e) {
+          return e.gender.name;
+        },
+      ]);
+      fillCombo(cmbSearchGender, genders);
+    }
 
-      function loadForm() {
-        fillCombo(cmbGender, genders);
-      }
+    function loadForm() {
+      fillCombo(cmbGender, genders);
+    }
 
-      function get(url) {
-        var http = new XMLHttpRequest();
+    function get(url) {
+      var http = new XMLHttpRequest();
 
-        // asynchronus way
+      // asynchronus way
 
-        // http.onreadystatechange = function () {
-        //   if (this.readyState == 4 && this.status == 200) {
-        //     var data = JSON.parse(this.responseText);
-        //     fillCombo()
-        //   }
-        // };
+      // http.onreadystatechange = function () {
+      //   if (this.readyState == 4 && this.status == 200) {
+      //     var data = JSON.parse(this.responseText);
+      //     fillCombo()
+      //   }
+      // };
 
-        // synchronous way
-        http.open("GET", url, false);
-        http.send();
-        var data = JSON.parse(http.responseText);
-        return data;
-      }
+      // synchronous way
+      http.open("GET", url, false);
+      http.send();
+      var data = JSON.parse(http.responseText);
+      return data;
+    }
 
-      function fillTable(show, data, props) {
-        for (let i = 0; i < data.length; i++) {
-          const datum = data[i];
-          // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
+    function fillTable(show, data, props) {
+      for (let i = 0; i < data.length; i++) {
+        const datum = data[i];
+        // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
 
-          var tr = document.createElement("tr");
+        var tr = document.createElement("tr");
 
-          for (let j = 0; j < props.length; j++) {
-            if (typeof props[j] == "function") {
-              var text = document.createTextNode(props[j](datum));
-            } else {
-              var text = document.createTextNode(datum[[props[j]]]);
-            }
-
-            var td = document.createElement("td");
-            td.appendChild(text);
-            tr.appendChild(td);
+        for (let j = 0; j < props.length; j++) {
+          if (typeof props[j] == "function") {
+            var text = document.createTextNode(props[j](datum));
+          } else {
+            var text = document.createTextNode(datum[[props[j]]]);
           }
 
-          show.appendChild(tr);
+          var td = document.createElement("td");
+          td.appendChild(text);
+          tr.appendChild(td);
         }
-      }
 
-      function fillCombo(combo, data) {
-        for (let i = 0; i < data.length; i++) {
-          const datum = data[i];
-          var option = document.createElement("option");
-          option.value = datum["id"];
-          option.innerHTML = datum["name"];
-          combo.appendChild(option);
-        }
+        show.appendChild(tr);
       }
-    </script>
-  </head>
+    }
+
+    function fillCombo(combo, data) {
+      for (let i = 0; i < data.length; i++) {
+        const datum = data[i];
+        var option = document.createElement("option");
+        option.value = datum["id"];
+        option.innerHTML = datum["name"];
+        combo.appendChild(option);
+      }
+    }
+  </script>
   <body>
-    <h1>Employee Detail Mangaer</h1>
-    <h3>--------------------Searh--------------------</h3>
+    <h1 class="text-center my-5">Employee Detail Manager</h1>
 
-    Name : <input type="text" id="txtSearchName" size="20" /><br /><br />
-    Gender :
-    <select id="cmbSearchGender"></select
-    ><br /><br />
-    <button id="btnSearh">Search</button>
-    <button id="btnSearhClear">Clear Search</button>
+    <div class="container">
+      <div class="row">
+        <div class="col m-3">
+          <div class="card p-4 bg-light">
+            <h3 class="text-center">Search</h3>
+            <br />
+            <div>
+              Name :
+              <input type="text" id="txtSearchName" size="20" /><br /><br />
+              Gender :
+              <select id="cmbSearchGender"></select
+              ><br /><br />
+              <button class="btn btn-primary" id="btnSearh">Search</button>
+              <button class="btn btn-danger" id="btnSearhClear">
+                Clear Search
+              </button>
+            </div>
+          </div>
 
-    <h3>--------------------view--------------------</h3>
-    <table cellspacing="1" cellpadding="5" id="tblMain" border="1">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Gender</th>
-        </tr>
-      </thead>
-      <tbody id="display"></tbody>
-    </table>
+          <div class="card my-5 p-4 bg-light">
+            <h3 class="text-center">Form</h3>
+            <br />
+            <div>
+              Name : <input type="text" id="txtName" size="20" /><br /><br />
+              Age: <input type="text" id="txtAge" size="20" /><br /><br />
+              Gender :
+              <select id="cmbGender"></select>
+              <br /><br />
+              <button class="btn btn-primary" id="btnAdd">Add</button>
+              <button class="btn btn-primary" id="btnUpdate">Update</button>
+              <button class="btn btn-warning" id="btnClear">Clear</button>
+              <button class="btn btn-danger" id="btnDelete">Delete</button>
+            </div>
+          </div>
+        </div>
 
-    <h3>--------------------Form--------------------</h3>
-
-    Name : <input type="text" id="txtName" size="20" /><br /><br />
-    Age: <input type="text" id="txtAge" size="20" /><br /><br />
-    Gender :
-    <select id="cmbGender"></select
-    ><br /><br />
-    <button id="btnDelete">Delete</button><button id="btnUpdate">Update</button
-    ><button id="btnClear">Clear</button><button id="btnAdd">Add</button>
+        <div class="col">
+          <div class="card my-3 p-3">
+            <!-- <h3>--------------------view--------------------</h3> -->
+            <!-- <table cellspacing="1" cellpadding="5" id="tblMain" border="1"> -->
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                </tr>
+              </thead>
+              <tbody id="display"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
