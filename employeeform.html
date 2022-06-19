@@ -26,6 +26,9 @@
     var array;
 
     function initialize() {
+      btnClear.addEventListener("click", clearForm);
+      btnAdd.addEventListener("click", btnAddMC);
+
       employees = get("./employeeController.php");
       genders = get("./gendercontroller.php");
       loadView();
@@ -33,18 +36,33 @@
     }
 
     function loadView() {
-      fillTable(display, employees, [
-        "name",
-        "age",
-        function (e) {
-          return e.gender.name;
-        },
-      ]);
-      fillCombo(cmbSearchGender, genders);
+      var modifyFunc = function (datum) {
+        var userConfirm = window.confirm(
+          "Are you sure to modify " + datum.name
+        );
+        userConfirm ? alert("HI") : "";
+      };
+
+      fillTable(
+        display,
+        employees,
+        [
+          "name",
+          "age",
+          function (e) {
+            return e.gender.name;
+          },
+        ],
+        [
+          { btnText: "Modify", func: modifyFunc },
+          { btnText: "Delete", func: modifyFunc },
+        ]
+      );
+      fillCombo(cmbSearchGender, genders, "Select a Gender");
     }
 
     function loadForm() {
-      fillCombo(cmbGender, genders);
+      fillCombo(cmbGender, genders, "Select a Gender");
     }
 
     function get(url) {
@@ -66,7 +84,7 @@
       return data;
     }
 
-    function fillTable(show, data, props) {
+    function fillTable(show, data, props, buttons) {
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
@@ -85,11 +103,36 @@
           tr.appendChild(td);
         }
 
+        if (buttons.length != 0) {
+          for (let k = 0; k < buttons.length; k++) {
+            const button = buttons[k];
+
+            var tdModify = document.createElement("td");
+            var btnModify = document.createElement("button");
+
+            btnModify.type = "button";
+            btnModify.innerHTML = button.btnText;
+            // btnModify.classList.add("btn");
+            btnModify.classList.add("btn-primary");
+            btnModify.addEventListener("click", function () {
+              button.func(datum);
+            });
+            tdModify.appendChild(btnModify);
+            tr.appendChild(tdModify);
+          }
+        }
         show.appendChild(tr);
       }
     }
 
-    function fillCombo(combo, data) {
+    function fillCombo(combo, data, optionHintStr) {
+      var optionHint = document.createElement("option");
+      optionHint.value = null;
+      optionHint.innerHTML = optionHintStr;
+      optionHint.setAttribute("disabled", "disabled");
+      optionHint.setAttribute("selected", "selected");
+      combo.appendChild(optionHint);
+
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         var option = document.createElement("option");
@@ -97,6 +140,23 @@
         option.innerHTML = datum["name"];
         combo.appendChild(option);
       }
+    }
+
+    function clearForm() {
+      txtName.value = "";
+      txtAge.value = "";
+      cmbGender.value = null;
+    }
+
+    function btnAddMC() {
+      var name = txtName.value;
+      var age = txtAge.value;
+      var userConfirm = window.confirm(
+        "Are you sure to your want to Add this Employee ? \nName : " +
+          name +
+          "\nAge : " +
+          age
+      );
     }
   </script>
   <body>
@@ -131,16 +191,20 @@
               <select id="cmbGender"></select>
               <br /><br />
               <button class="btn btn-primary" id="btnAdd">Add</button>
-              <button class="btn btn-primary" id="btnUpdate">Update</button>
+              <button class="btn btn-primary" id="btnUpdate" hidden>
+                Update
+              </button>
               <button class="btn btn-warning" id="btnClear">Clear</button>
-              <button class="btn btn-danger" id="btnDelete">Delete</button>
+              <button class="btn btn-danger" id="btnDelete" hidden>
+                Delete
+              </button>
             </div>
           </div>
         </div>
 
         <div class="col">
           <div class="card my-3 p-3">
-            <!-- <h3>--------------------view--------------------</h3> -->
+            <h4 class="text-center mb-2">Employees</h4>
             <!-- <table cellspacing="1" cellpadding="5" id="tblMain" border="1"> -->
             <table class="table table-striped">
               <thead>
@@ -148,10 +212,55 @@
                   <th>Name</th>
                   <th>Age</th>
                   <th>Gender</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="display"></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#exampleModal"
+    >
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
