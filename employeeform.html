@@ -25,6 +25,12 @@
     var employees;
     var array;
 
+    function Employee(name, age, gender) {
+      this.name = name;
+      this.age = age;
+      this.gender = gender;
+    }
+
     function initialize() {
       btnClear.addEventListener("click", clearForm);
       btnAdd.addEventListener("click", btnAddMC);
@@ -36,29 +42,27 @@
     }
 
     function loadView() {
+      fillEmployeeTable()
+      fillCombo(cmbSearchGender, genders, "Select a Gender");
+    }
+    
+    function fillEmployeeTable() {
       var modifyFunc = function (datum) {
         var userConfirm = window.confirm(
-          "Are you sure to modify " + datum.name
+                "Are you sure to modify " + datum.name
         );
         userConfirm ? alert("HI") : "";
       };
 
       fillTable(
-        display,
-        employees,
-        [
-          "name",
-          "age",
-          function (e) {
-            return e.gender.name;
-          },
-        ],
-        [
-          { btnText: "Modify", func: modifyFunc },
-          { btnText: "Delete", func: modifyFunc },
-        ]
+              display,
+              employees,
+              ["name","age",function (e) {return e.gender.name;},],
+              [
+                { btnText: "Modify", func: modifyFunc },
+                { btnText: "Delete", func: modifyFunc },
+              ]
       );
-      fillCombo(cmbSearchGender, genders, "Select a Gender");
     }
 
     function loadForm() {
@@ -84,7 +88,18 @@
       return data;
     }
 
+    function add(url, data) {
+      var http = new XMLHttpRequest();
+
+      http.open("POST", url, false);
+      http.setRequestHeader(
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      );
+      http.send(data);
+    }
     function fillTable(show, data, props, buttons) {
+      show.innerHTML = ''
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
@@ -125,10 +140,10 @@
       }
     }
 
-    function fillCombo(combo, data, optionHintStr) {
+    function fillCombo(combo, data, hint) {
       var optionHint = document.createElement("option");
       optionHint.value = null;
-      optionHint.innerHTML = optionHintStr;
+      optionHint.innerHTML = hint;
       optionHint.setAttribute("disabled", "disabled");
       optionHint.setAttribute("selected", "selected");
       combo.appendChild(optionHint);
@@ -136,7 +151,7 @@
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         var option = document.createElement("option");
-        option.value = datum["id"];
+        option.value = JSON.stringify(datum);
         option.innerHTML = datum["name"];
         combo.appendChild(option);
       }
@@ -151,12 +166,30 @@
     function btnAddMC() {
       var name = txtName.value;
       var age = txtAge.value;
-      var userConfirm = window.confirm(
-        "Are you sure to your want to Add this Employee ? \nName : " +
-          name +
-          "\nAge : " +
-          age
-      );
+      var gender = cmbGender.value != "null" ? JSON.parse(cmbGender.value) : "";
+      if (name != "" && age != "" && gender != "") {
+        var userConfirm = window.confirm(
+          "Are you sure to your want to Add this Employee ? \nName : " +
+            name +
+            "\nAge : " +
+            age +
+            "\nGender : " +
+            gender["name"]
+        );
+        if (userConfirm) {
+          var employee = new Employee();
+
+          employee.name = name;
+          employee.age = age;
+          employee.gender = gender;
+          data = "employee=" + JSON.stringify(employee);
+          add("./employeeAdd.php", data);
+          fillEmployeeTable()
+          clearForm()
+        }
+      } else {
+        alert("error ... ");
+      }
     }
   </script>
   <body>

@@ -45,7 +45,19 @@ require_once("genderdao.php");
                 array_push($employees,$employee);
             }
             return $employees;
+        }
+
+        public static function save($employee){
+
+            $sql = "INSERT INTO employee (name, age, gender_id) VALUES ('".$employee->name."','".$employee->age."',".$employee->gender->id.")";
+            echo($sql);
+            $dbconn = CommonDao::getConnection();
+             $dbconn->query($sql);
+        }
+
+        public static function delete($employee){
+            $sql = "DELETE ";
+        }
     }
-}
 
 ?>
