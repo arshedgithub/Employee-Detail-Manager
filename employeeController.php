@@ -1,32 +1,10 @@
 <?php 
 
-require_once("employeeDao.php");
+require_once("employeedao.php");
 
-// var_dump($GLOBALS);
-// echo($_SERVER['REQUEST_METHOD']);
 
-if($_SERVER['REQUEST_METHOD'] == "GET"){
-
-    $hasName = !empty($_GET['name']);
-    $hasGender = !empty($_GET['gender']);
-
-    if ($hasName) $name = $_GET['name'];
-    if ($hasGender) $gender = $_GET['gender'];
-
-    $employees = null;
-    if (!$hasName && !$hasGender)  $employees = EmployeeDao::getAll();
-    if ($hasName && !$hasGender) $employees = EmployeeDao::getAllByName($name);
-    if (!$hasName && $hasGender) $employees = EmployeeDao::getAllByGender($gender);
-    if ($hasName && $hasGender) $employees  = EmployeeDao::getAllByNameAndGender($name,$gender);
-
+    $employees = EmployeeDao::getAll();
     $json = json_encode($employees);
     echo($json); 
-
-}
-
-if($_SERVER['REQUEST_METHOD'] == "POST"){
-    $employee = json_decode($_POST['employee']);
-    employeeDao::save($employee);
-}
 
 ?>
