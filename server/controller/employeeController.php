@@ -31,4 +31,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
     employeeDao::save($employee);
 }
 
+if($_SERVER['REQUEST_METHOD'] == "DELETE"){
+    $id = $_GET['id'];
+    $hasId = !empty($id);
+
+    if ($hasId) EmployeeDao::delete($id);
+}
+
 ?>
