@@ -37,8 +37,8 @@
       btnSearchClear.addEventListener("click", clearSearch);
       btnAdd.addEventListener("click", btnAddMC);
 
-      employees = get("./employeeController.php");
-      genders = get("./gendercontroller.php");
+      employees = get("./../server/controller/employeeController.php");
+      genders = get("./../server/controller/genderController.php");
       loadView();
       loadForm();
     }
@@ -180,7 +180,7 @@
       !tname && tgen ? (qry = "gender=" + tgen["id"]) : "";
       tname && tgen ? (qry = "name=" + tname + "&gender=" + tgen["id"]) : "";
 
-      employees = get("./employeeController.php?" + qry);
+      employees = get("./../server/controller/employeeController?" + qry);
       fillEmployeeTable();
     }
 
@@ -209,7 +209,7 @@
           employee.age = age;
           employee.gender = gender;
           data = "employee=" + JSON.stringify(employee);
-          add("./employeeController.php", data);
+          add("./../server/controller/employeeController", data);
           fillEmployeeTable();
           clearForm();
         }
@@ -271,6 +271,7 @@
                   <th>Name</th>
                   <th>Age</th>
                   <th>Gender</th>
+                  <th></th>
                   <th></th>
                 </tr>
               </thead>

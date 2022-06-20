@@ -1,7 +1,9 @@
 <?php
 
-require_once("db.php");
-require_once("gender.php");
+$parent = dirname(__DIR__);
+
+require_once($parent."/db.php");
+require_once($parent."/model/gender.php");
 
     class GenderDao{
 

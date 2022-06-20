@@ -1,6 +1,8 @@
 <?php 
 
-require_once("employeeDao.php");
+$parent = dirname(__DIR__);
+
+require_once($parent."/view/employeeDao.php");
 
 // var_dump($GLOBALS);
 // echo($_SERVER['REQUEST_METHOD']);

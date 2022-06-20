@@ -3,13 +3,7 @@
 echo("Testing...!");
 echo("<br><br>");
 
-// require_once("genderdao.php");
-require_once("employeedao.php");
-
-// $gender = GenderDao::getById(1);
-$employee = EmployeeDao::getById(2);
-$employees = EmployeeDao::getAll();
-var_dump($employees);
+require_once("./view/genderDao.php");
 
 // $genders = GenderDao::getAll();
 
