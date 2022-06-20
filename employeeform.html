@@ -180,7 +180,7 @@
       !tname && tgen ? (qry = "gender=" + tgen["id"]) : "";
       tname && tgen ? (qry = "name=" + tname + "&gender=" + tgen["id"]) : "";
 
-      employees = get("./employeeController.php");
+      employees = get("./employeeController.php?" + qry);
       fillEmployeeTable();
     }
 
@@ -209,7 +209,7 @@
           employee.age = age;
           employee.gender = gender;
           data = "employee=" + JSON.stringify(employee);
-          add("./employeeAdd.php", data);
+          add("./employeeController.php", data);
           fillEmployeeTable();
           clearForm();
         }
