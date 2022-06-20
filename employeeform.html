@@ -33,6 +33,8 @@
 
     function initialize() {
       btnClear.addEventListener("click", clearForm);
+      btnSearch.addEventListener("click", search);
+      btnSearchClear.addEventListener("click", clearSearch);
       btnAdd.addEventListener("click", btnAddMC);
 
       employees = get("./employeeController.php");
@@ -42,26 +44,32 @@
     }
 
     function loadView() {
-      fillEmployeeTable()
+      fillEmployeeTable();
       fillCombo(cmbSearchGender, genders, "Select a Gender");
     }
-    
+
     function fillEmployeeTable() {
       var modifyFunc = function (datum) {
         var userConfirm = window.confirm(
-                "Are you sure to modify " + datum.name
+          "Are you sure to modify " + datum.name
         );
         userConfirm ? alert("HI") : "";
       };
 
       fillTable(
-              display,
-              employees,
-              ["name","age",function (e) {return e.gender.name;},],
-              [
-                { btnText: "Modify", func: modifyFunc },
-                { btnText: "Delete", func: modifyFunc },
-              ]
+        display,
+        employees,
+        [
+          "name",
+          "age",
+          function (e) {
+            return e.gender.name;
+          },
+        ],
+        [
+          { btnText: "Modify", func: modifyFunc, btnColor: "btn-primary" },
+          { btnText: "Delete", func: modifyFunc, btnColor: "btn-danger" },
+        ]
       );
     }
 
@@ -98,8 +106,9 @@
       );
       http.send(data);
     }
+
     function fillTable(show, data, props, buttons) {
-      show.innerHTML = ''
+      show.innerHTML = "";
       for (let i = 0; i < data.length; i++) {
         const datum = data[i];
         // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
@@ -127,8 +136,7 @@
 
             btnModify.type = "button";
             btnModify.innerHTML = button.btnText;
-            // btnModify.classList.add("btn");
-            btnModify.classList.add("btn-primary");
+            btnModify.classList.add("btn", button.btnColor);
             btnModify.addEventListener("click", function () {
               button.func(datum);
             });
@@ -163,6 +171,24 @@
       cmbGender.value = null;
     }
 
+    function search() {
+      var qry;
+      var tname = txtSearchName.value;
+      var tgen =
+        cmbSearchGender.value != null ? JSON.parse(cmbSearchGender.value) : "";
+      tname && !tgen ? (qry = "name=" + tname) : "";
+      !tname && tgen ? (qry = "gender=" + tgen["id"]) : "";
+      tname && tgen ? (qry = "name=" + tname + "&gender=" + tgen["id"]) : "";
+
+      employees = get("./employeeController.php?" + qry);
+      fillEmployeeTable();
+    }
+
+    function clearSearch() {
+      txtSearchName.value = "";
+      cmbSearchGender.value = null;
+    }
+
     function btnAddMC() {
       var name = txtName.value;
       var age = txtAge.value;
@@ -183,9 +209,9 @@
           employee.age = age;
           employee.gender = gender;
           data = "employee=" + JSON.stringify(employee);
-          add("./employeeAdd.php", data);
-          fillEmployeeTable()
-          clearForm()
+          add("./employeeController.php", data);
+          fillEmployeeTable();
+          clearForm();
         }
       } else {
         alert("error ... ");
@@ -207,8 +233,8 @@
               Gender :
               <select id="cmbSearchGender"></select
               ><br /><br />
-              <button class="btn btn-primary" id="btnSearh">Search</button>
-              <button class="btn btn-danger" id="btnSearhClear">
+              <button class="btn btn-primary" id="btnSearch">Search</button>
+              <button class="btn btn-danger" id="btnSearchClear">
                 Clear Search
               </button>
             </div>
@@ -260,7 +286,7 @@
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
+      data-bs-target="#modifyModal"
     >
       Launch demo modal
     </button>
@@ -268,7 +294,7 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="exampleModal"
+      id="modifyModal"
       tabindex="-1"
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
