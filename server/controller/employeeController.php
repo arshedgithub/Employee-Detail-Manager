@@ -32,10 +32,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 }
 
 if($_SERVER['REQUEST_METHOD'] == "DELETE"){
-    $id = $_GET['id'];
-    $hasId = !empty($id);
+    $hasId = !empty($_GET['id']);
 
-    if ($hasId) EmployeeDao::delete($id);
+    if ($hasId) {
+        $id = $_GET['id'];
+        EmployeeDao::delete($id);
+    }
 }
 
 ?>

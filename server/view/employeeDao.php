@@ -130,7 +130,8 @@ class EmployeeDao{
     
     public static function delete($employeeId){
 
-        $sql = "DELETE FROM employee WHERE id = '$employeeId';";
+        $sql = "DELETE FROM employee WHERE id = $employeeId;";
+        echo($sql);
         $dbconn = CommonDao::getConnection();
         $dbconn->query($sql);
         

@@ -1,3 +1,6 @@
+import { get, add, deleteEmp } from "./http.js";
+import { fillTable, fillCombo } from "./components.js";
+
 window.addEventListener("load", initialize);
 
 var ajax;
@@ -30,15 +33,20 @@ function loadView() {
 
 function fillEmployeeTable() {
   var modifyFunc = function (datum) {
-    var userConfirm = window.confirm("Are you sure to modify " + datum.name);
-    userConfirm ? alert("HI") : "";
-  };
+    modalBtn.classList.add("btn-primary")
+    modalBtn.innerHTML = 'Modify'
+    confirmTxt.innerHTML = `Are you sure you want to modify this employee as \nName = <span>${datum.name}</span>\n<span>${datum.age}</span>`
+    // var userConfirm = window.confirm("Are you sure to modify " + datum.name);
+    // userConfirm ? alert("HI") : "";
+  };  
 
   var deleteFunc = function (datum) {
-    // var userConfirm = window.confirm("Are you sure to modify " + datum.id);
-    deleteEmployee(
-      "./../server/controller/employeeController.php?id=" + datum.id
-    );
+    modalBtn.classList.add("btn-danger")
+    modalBtn.innerHTML = 'Delete'
+    confirmTxt.innerHTML = `Are you sure you want to delete this employee \nName = <span>${datum.name}</span>\n<span>${datum.age}</span>`
+    // deleteEmp(
+    //   "./../server/controller/employeeController.php?id=" + datum.id
+    // );
   };
   fillTable(
     display,
@@ -51,106 +59,14 @@ function fillEmployeeTable() {
       },
     ],
     [
-      { btnText: "Modify", func: modifyFunc, btnColor: "btn-primary" },
-      { btnText: "Delete", func: deleteFunc, btnColor: "btn-danger" },
+      { btnText: " Modify", func: modifyFunc, btnColor: "primary", icon: 'pen-to-square' },
+      { btnText: "", func: deleteFunc, btnColor: "danger", icon: 'trash-can' },
     ]
   );
 }
 
 function loadForm() {
   fillCombo(cmbGender, genders, "Select a Gender");
-}
-
-function get(url) {
-  var http = new XMLHttpRequest();
-
-  // asynchronus way
-
-  // http.onreadystatechange = function () {
-  //   if (this.readyState == 4 && this.status == 200) {
-  //     var data = JSON.parse(this.responseText);
-  //     fillCombo()
-  //   }
-  // };
-
-  // synchronous way
-  http.open("GET", url, false);
-  http.send();
-  var data = JSON.parse(http.responseText);
-  return data;
-}
-
-function addEmployee(url, data) {
-  var http = new XMLHttpRequest();
-
-  http.open("POST", url, false);
-  http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  http.send(data);
-}
-
-function deleteEmployee(url) {
-  var http = new XMLHttpRequest();
-
-  http.open("DELETE", url, false);
-  http.send(null);
-}
-
-function fillTable(show, data, props, buttons) {
-  show.innerHTML = "";
-  for (let i = 0; i < data.length; i++) {
-    const datum = data[i];
-    // display.innerHTML += `<tr><td>${employee['name']}</td><td>${employee['age']}</td><td>${employee['gender']["name"]}</td></tr>`;
-
-    var tr = document.createElement("tr");
-
-    for (let j = 0; j < props.length; j++) {
-      if (typeof props[j] == "function") {
-        var text = document.createTextNode(props[j](datum));
-      } else {
-        var text = document.createTextNode(datum[[props[j]]]);
-      }
-
-      var td = document.createElement("td");
-      td.appendChild(text);
-      tr.appendChild(td);
-    }
-
-    if (buttons.length != 0) {
-      for (let k = 0; k < buttons.length; k++) {
-        const button = buttons[k];
-
-        var tdModify = document.createElement("td");
-        var btnModify = document.createElement("button");
-
-        btnModify.type = "button";
-        btnModify.innerHTML = button.btnText;
-        btnModify.classList.add("btn", button.btnColor);
-        btnModify.addEventListener("click", function () {
-          button.func(datum);
-        });
-        tdModify.appendChild(btnModify);
-        tr.appendChild(tdModify);
-      }
-    }
-    show.appendChild(tr);
-  }
-}
-
-function fillCombo(combo, data, hint) {
-  var optionHint = document.createElement("option");
-  optionHint.value = null;
-  optionHint.innerHTML = hint;
-  optionHint.setAttribute("disabled", "disabled");
-  optionHint.setAttribute("selected", "selected");
-  combo.appendChild(optionHint);
-
-  for (let i = 0; i < data.length; i++) {
-    const datum = data[i];
-    var option = document.createElement("option");
-    option.value = JSON.stringify(datum);
-    option.innerHTML = datum["name"];
-    combo.appendChild(option);
-  }
 }
 
 function clearForm() {
@@ -196,7 +112,7 @@ function btnAddMC() {
       employee.name = name;
       employee.age = age;
       employee.gender = gender;
-      data = "employee=" + JSON.stringify(employee);
+      var data = "employee=" + JSON.stringify(employee);
       add("./../server/controller/employeeController", data);
       fillEmployeeTable();
       clearForm();
